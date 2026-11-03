@@ -1,26 +1,300 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  color: #0f172a;
+  font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background:
+    radial-gradient(1100px 520px at 8% -8%, #d1fae5 0%, transparent 60%),
+    radial-gradient(900px 480px at 100% 0%, #cffafe 0%, transparent 55%),
+    radial-gradient(800px 500px at 50% 110%, #fef3c7 0%, transparent 55%), #f8fafc;
+  background-attachment: fixed;
+}
+
+/* ---------- Keyboard focus is always visible ---------- */
+:focus-visible {
+  outline: 3px solid rgba(16, 185, 129, 0.6);
+  outline-offset: 2px;
+}
+
+/* ---------- Buttons: they lean toward the cursor, lift, and squish when pressed ---------- */
+button:not(:disabled) {
+  cursor: pointer;
+  transition: transform 0.14s ease-out, box-shadow 0.18s ease, background-color 0.15s ease, color 0.15s ease;
+}
+button:not(:disabled):hover {
+  transform: translate(var(--tx, 0px), calc(var(--ty, 0px) - 2px)) scale(1.05);
+  box-shadow: 0 10px 20px -10px rgba(15, 23, 42, 0.4);
+}
+button:not(:disabled):active {
+  transform: scale(0.94);
+  box-shadow: none;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+
+/* A light sweep across the main (green / red) buttons on hover */
+button[class*="bg-emerald-600"],
+button[class*="bg-red-600"] {
+  position: relative;
+  overflow: hidden;
+}
+button[class*="bg-emerald-600"]::after,
+button[class*="bg-red-600"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.38) 50%, transparent 70%);
+  transform: translateX(-130%);
+  transition: transform 0.6s ease;
+}
+button[class*="bg-emerald-600"]:hover::after,
+button[class*="bg-red-600"]:hover::after {
+  transform: translateX(130%);
+}
+
+/* Links in the header */
+.nav-link {
+  position: relative;
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+.nav-link:hover {
+  transform: translateY(-1px);
+}
+.nav-link[data-active="true"] {
+  background: #d1fae5;
+  color: #047857;
+}
+
+/* ---------- Cards ---------- */
+.section-card {
+  position: relative;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 10px 28px -14px rgba(15, 23, 42, 0.16);
+  animation: fade-up 0.55s ease-out both;
+  transition: box-shadow 0.2s ease;
+}
+.section-card:hover {
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05), 0 18px 38px -16px rgba(15, 23, 42, 0.24);
+}
+/* A soft spotlight that follows the cursor inside a card */
+.section-card::before,
+.lift::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 50%), rgba(16, 185, 129, 0.09), transparent 45%);
+  transition: opacity 0.25s ease;
+}
+.section-card:hover::before,
+.lift:hover::before {
+  opacity: 1;
+}
+.accent-emerald { border-top: 4px solid #10b981; }
+.accent-amber { border-top: 4px solid #f59e0b; }
+.accent-violet { border-top: 4px solid #8b5cf6; }
+.accent-sky { border-top: 4px solid #0ea5e9; }
+.accent-rose { border-top: 4px solid #f43f5e; }
+.accent-teal { border-top: 4px solid #14b8a6; }
+
+.lift {
+  position: relative;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 26px -12px rgba(15, 23, 42, 0.28);
+}
+
+/* ---------- Upload drop zone ---------- */
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 2rem 1rem;
+  text-align: center;
+  border: 2.5px dashed #94a3b8;
+  border-radius: 1.25rem;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.dropzone[data-empty="true"] {
+  animation: pulse-border 2.4s ease-in-out infinite;
+}
+.dropzone:hover,
+.dropzone[data-drag="true"] {
+  border-color: #10b981;
+  background: #ecfdf5;
+  transform: translateY(-3px);
+  box-shadow: 0 16px 30px -18px rgba(16, 185, 129, 0.6);
+}
+.dropzone:focus-within {
+  outline: 3px solid rgba(16, 185, 129, 0.6);
+  outline-offset: 3px;
+}
+.dropzone-icon {
+  animation: bob 2.6s ease-in-out infinite;
+}
+
+/* ---------- Flip card (3D) ---------- */
+.flip-scene {
+  perspective: 1200px;
+}
+.flip-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 15rem;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+/* NOTE: never put filter / opacity / overflow on .flip-card. Those flatten the 3D card
+   and the back face then shows up as the mirrored question. */
+.flip-card:focus-visible {
+  border-radius: 1.25rem;
+}
+.flip-card[data-flipped="true"] {
+  transform: rotateY(180deg);
+}
+.flip-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  overflow-y: auto;
+  text-align: center;
+  border-radius: 1.25rem;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: 0 14px 30px -16px rgba(15, 23, 42, 0.35);
+}
+.flip-back {
+  transform: rotateY(180deg);
+}
+/* Safety net: also swap which face is visible half-way through the turn (0.3s of 0.6s),
+   so the right side shows even if a browser ignores backface-visibility. */
+.flip-face {
+  transition: visibility 0s linear 0.3s;
+}
+.flip-front {
+  visibility: visible;
+}
+.flip-back {
+  visibility: hidden;
+}
+.flip-card[data-flipped="true"] .flip-front {
+  visibility: hidden;
+}
+.flip-card[data-flipped="true"] .flip-back {
+  visibility: visible;
+}
+
+/* ---------- Animations ---------- */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes pop {
+  0% { transform: scale(0.6); }
+  60% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+@keyframes pop-in {
+  0% { opacity: 0; transform: scale(0.7) translateY(20px); }
+  70% { opacity: 1; transform: scale(1.04); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0) rotate(0); }
+  20% { transform: translateX(-8px) rotate(-8deg); }
+  40% { transform: translateX(8px) rotate(8deg); }
+  60% { transform: translateX(-5px) rotate(-4deg); }
+  80% { transform: translateX(5px) rotate(4deg); }
+}
+@keyframes slide-from-right {
+  from { opacity: 0; transform: translateX(60px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes slide-from-left {
+  from { opacity: 0; transform: translateX(-60px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes toast-in {
+  0% { opacity: 0; transform: translateY(20px) scale(0.9); }
+  15% { opacity: 1; transform: none; }
+  85% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: translateY(-12px); }
+}
+@keyframes confetti-fall {
+  from { transform: translateY(0) rotate(0deg); opacity: 1; }
+  to { transform: translateY(112vh) rotate(540deg); opacity: 0.9; }
+}
+@keyframes pulse-border {
+  0%, 100% { border-color: #94a3b8; }
+  50% { border-color: #34d399; }
+}
+@keyframes sway {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+@keyframes ring-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.35); }
+  50% { box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
+}
+
+.pop { animation: pop 0.35s ease-out; }
+.pop-in { animation: pop-in 0.45s ease-out both; }
+.bob { animation: bob 3.2s ease-in-out infinite; }
+.sway { transform-origin: bottom center; animation: sway 3s ease-in-out infinite; }
+.shake-once { animation: shake 0.45s ease-in-out; }
+.slide-from-right { animation: slide-from-right 0.3s ease-out both; }
+.slide-from-left { animation: slide-from-left 0.3s ease-out both; }
+.toast-in { animation: toast-in 2.2s ease-in-out both; }
+.ring-pulse { animation: ring-pulse 1.8s ease-in-out infinite; }
+.confetti-piece {
+  position: fixed;
+  top: -2.5rem;
+  z-index: 90;
+  pointer-events: none;
+  animation-name: confetti-fall;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
